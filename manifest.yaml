@@ -41,7 +41,7 @@ spec:
             mountPath: /secrets
       containers:
       - name: mysql
-        image: esrasd/mysql:1.3.0
+        image: esrasd/mysql:1.5.0
         volumeMounts:
         - name: mysql-reader
           mountPath: /secrets
