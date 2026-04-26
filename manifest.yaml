@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: roboshop
+  # these labels are replica set labels
+  labels:
+    project: roboshop
+    tier: db
+    component: mysql
+spec:
+  serviceAccount: mysql-secret-reader
+  replicas: 1
+  selector:
+    # by using these lables replica set select the pod
+    matchLabels:
+      project: roboshop
+      tier: db
+      component: mysql
+  # this is pod , as we know pod is the subset of replica set
+  template:
+    metadata:
+      labels:
+        project: roboshop
+        tier: db
+        component: mysql
+    spec:
+      initContainers:
+      - name: secret-reader
+        image: amazon/aws-cli
+        command:
+        - sh
+        - -c
+        - |
+            aws secretsmanager get-secret-value --secret-id roboshop/dev/mysql_root_password \
+            --query SecretString --output text | jq -r .MYSQL_ROOT_PASSWORD > /secrets/mysql-secrets-reader.txt
+            echo "Secret placed successfully"
+            cat /secrets/mysql-secrets-reader.txt # just fo verification,should not do actually in the production
+        volumeMounts:
+          - name: mysql-reader
+            mountPath: /secrets
+      containers:
+      - name: mysql
+        image: esrasd/mysql:1.3.0
+        volumeMounts:
+        - name: mysql-reader
+          mountPath: /secrets
+      volumes:
+        - name: mysql-secret
+          emptyDir: {}
+
