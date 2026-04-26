@@ -37,8 +37,8 @@ spec:
             echo "Secret placed successfully"
             cat /secrets/mysql-secrets-reader.txt # just fo verification,should not do actually in the production
         volumeMounts:
-          - name: mysql-reader
-            mountPath: /secrets
+        - name: mysql-reader
+          mountPath: /secrets
       containers:
       - name: mysql
         image: esrasd/mysql:1.5.0
