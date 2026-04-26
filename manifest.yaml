@@ -9,7 +9,6 @@ metadata:
     tier: db
     component: mysql
 spec:
-  serviceAccount: mysql-secret-reader
   replicas: 1
   selector:
     # by using these lables replica set select the pod
@@ -25,6 +24,7 @@ spec:
         tier: db
         component: mysql
     spec:
+      serviceAccount: mysql-secret-reader
       initContainers:
       - name: secret-reader
         image: amazon/aws-cli
